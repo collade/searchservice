@@ -54,10 +54,12 @@
     <Compile Include="Entities\Search.cs" />
     <Compile Include="Entities\SearchHistory.cs" />
     <Compile Include="Entities\SearchItemDto.cs" />
+    <Compile Include="Helpers\CryptoHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repos\EntityRepository.cs" />
     <Compile Include="Repos\IEntityRepository.cs" />
     <Compile Include="Services\ISearchService.cs" />
+    <Compile Include="Services\SearchService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

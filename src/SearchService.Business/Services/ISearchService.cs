@@ -4,7 +4,7 @@
     using System.ServiceModel;
     using System.Threading.Tasks;
 
-    using SearchService.Business.Entities;
+    using global::SearchService.Business.Entities;
 
     [ServiceContract]
     public interface ISearchService
