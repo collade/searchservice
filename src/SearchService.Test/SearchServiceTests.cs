@@ -1,6 +1,7 @@
 ﻿namespace SearchService.Test
 {
     using System;
+    using System.Security.Cryptography;
 
     using NUnit.Framework;
 
@@ -14,15 +15,19 @@
     {
         protected CryptoHelper _cryptoHelper;
         protected IEntityRepository<Organization> _organizationRepo;
+        protected IEntityRepository<Search> _searchRepo;
+        protected IEntityRepository<SearchHistory> _searchHistoryRepo;
 
         protected ISearchService _service;
 
         protected const string organizationId = "51fb4622902c7f0fecca0343";
-        protected const string organizationKey = "xyz";
+        protected string organizationKey;
 
         private void ClearCollections()
         {
             this._organizationRepo.Clear();
+            this._searchRepo.Clear();
+            this._searchHistoryRepo.Clear();
         }
 
         [SetUp]
@@ -30,10 +35,14 @@
         {
             _cryptoHelper = new CryptoHelper();
             _organizationRepo = new EntityRepository<Organization>();
+            _searchRepo = new EntityRepository<Search>();
+            _searchHistoryRepo = new EntityRepository<SearchHistory>();
 
             this.ClearCollections();
 
-            _service = new SearchService(_organizationRepo);
+            organizationKey = Convert.ToBase64String(TripleDES.Create().Key);
+
+            _service = new SearchService(_organizationRepo, _searchRepo, _searchHistoryRepo, _cryptoHelper);
         }
 
         [Test]
@@ -59,7 +68,20 @@
             var aText = "just a text";
             var encText = _cryptoHelper.Encrypt(aText, organizationKey);
 
-            Assert.AreEqual(true, _service.AddToSearch(organizationId, encText, "1", "test"));
+            Assert.AreEqual(true, _service.AddToSearch(organizationId, encText, encText, "1", "test", true).Result);
+        }
+
+        [Test]
+        public void Should_find_searchIndexItem_when_Search_method_called()
+        {
+            this.ClearCollections();
+            _service.AddOrganization(organizationId, organizationKey);
+
+            var aText = "just a text";
+            var encText = _cryptoHelper.Encrypt(aText, organizationKey);
+
+            Assert.Greater(0, _service.Search(organizationId, "text").Result.Count);
+            Assert.AreEqual(0, _service.Search(organizationId, "test").Result.Count);
         }
     }
 }

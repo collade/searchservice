@@ -15,8 +15,8 @@
         bool AddOrganization(string organizationId, string encryptionKey);
 
         [OperationContract]
-        bool AddToSearch(string organizationId, string encryptedText, string contentId, string contentType);
-        
+        Task<bool> AddToSearch(string organizationId, string text, string encryptedResultTitle, string contentId, string contentType, bool isEncrypted);
+
         [OperationContract]
         Task<List<SearchItemDto>> Search(string organizationId, string searchKey);
     }
